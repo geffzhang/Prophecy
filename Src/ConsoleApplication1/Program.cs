@@ -6,6 +6,7 @@ using Prophecy.Communication;
 using ProtoBuf;
 using Prophecy;
 using System.IO;
+using ProtoBuf.Data;
 
 namespace ConsoleApplication1
 {
@@ -60,12 +61,15 @@ namespace ConsoleApplication1
             // This is where you would process the message (or queue it to be processed later).
             //Console.WriteLine(e.ReceiveBuffer + "\r\n");
             using (MemoryStream ms = new MemoryStream(e.ReceiveBuffer))
-            {          
-                Customer customer = Serializer.Deserialize<Customer>(ms);
-                byte[] byteArray = customer.BytesData;
-                string str = Encoding.Unicode.GetString(byteArray);
-                Console.WriteLine(str);
-                Console.WriteLine(customer.CustomerID);
+            {
+                var table = DataSerializer.DeserializeDataTable(ms);
+
+                //Customer customer = Serializer.DeserializeWithLengthPrefix<Customer>(ms,PrefixStyle.Base128);
+                //byte[] byteArray = customer.BytesData;
+                //string str = Encoding.Unicode.GetString(byteArray);
+                //Console.WriteLine(str);
+                //Console.WriteLine(customer.CustomerID);
+                Console.WriteLine(table.ToString());
             }
         }
     }

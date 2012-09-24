@@ -10,6 +10,7 @@ using Prophecy.Communication;
 using Prophecy;
 using ProtoBuf;
 using System.IO;
+using ProtoBuf.Data;
 
 namespace Example
 {
@@ -66,11 +67,27 @@ namespace Example
         private void btnSend_Click(object sender, EventArgs e)
         {
             //_comm.Send(txtSend.Text + "\r"); // our pretend protocol uses \r as the message delimiter.
-            Customer customer = Customer.GetOneCustomer();
+            //Customer customer = Customer.GetOneCustomer();
+            var innerA = TestData.FromMatrix(new[]
+            {
+                new object[] { "A", "B" },
+                new object[] { 1, 2 },
+                new object[] { 3, 4 }
+            });
+            
+            var innerB = TestData.FromMatrix(new[]
+            { 
+                new object[] { "C", "D" },
+                new object[] { 5, 6 }, 
+                new object[] { 7, 8 } }); 
+            
+            var table = TestData.FromMatrix(new[] { new object[] { "E", "F" }, new object[] { "A", innerA }, new object[] { "B", innerB } });
 
             using (MemoryStream ms = new MemoryStream())
             {
-                Serializer.Serialize(ms, customer);
+                DataSerializer.Serialize(ms, table, new ProtoDataWriterOptions());
+                //Serializer.Serialize(ms, customer);
+                //Serializer.SerializeWithLengthPrefix<Customer>(ms, customer, PrefixStyle.Base128);
                 _comm.Send(ms.ToArray());
                 //Console.WriteLine("ProtoBuf Length:{0}", ms.ToArray());
             }
